@@ -1,0 +1,35 @@
+exittrap1 = createListOfModels()$P
+variable.names = c("resting","Teu","Tem","Pm","P","p")
+data=selectData(firstquarter=1,lastquarter=32,model = 'temperature',A0=proportions$A0,P=0.528) 
+data$jagsdata$tcat = cut(data$jagsdata$mean_temp, breaks=c(18, 23, 25, 27, 29, 32), labels = FALSE)
+data$jagsdata$mean_temp = NULL
+
+data$jagsdata$P = rep(data$jagsdata$P,5)
+quantiles = parameterEstimates(jagsdata=data$jagsdata,jagsmodel=exittrap1)
+quantiles$firstquarter = firstquarter
+quantiles$jagsModel='Reference'
+all_quantiles = quantiles
+
+data$jagsdata$P = rep(0.75,5) 
+quantiles = parameterEstimates(jagsdata=data$jagsdata,jagsmodel=exittrap1)
+quantiles$firstquarter = firstquarter
+quantiles$jagsModel='P = 0.75'
+all_quantiles = rbind(all_quantiles,quantiles)
+
+data$jagsdata$P = rep(NULL,5)
+quantiles = parameterEstimates(jagsdata=data$jagsdata,jagsmodel=exittrap1)
+quantiles$firstquarter = firstquarter
+quantiles$jagsModel='P = est.'
+all_quantiles = rbind(all_quantiles,quantiles)
+
+jagsdata$Teu = 1
+quantiles = parameterEstimates(jagsdata=data$jagsdata,jagsmodel=exittrap1)
+quantiles$firstquarter = firstquarter
+quantiles$jagsModel='Teu = 1'
+all_quantiles = rbind(all_quantiles,quantiles)
+
+jagsdata$Tem = 1
+quantiles = parameterEstimates(jagsdata=data$jagsdata,jagsmodel=exittrap1)
+quantiles$firstquarter = firstquarter
+quantiles$jagsModel='Tem = 1'
+all_quantiles = rbind(all_quantiles,quantiles)

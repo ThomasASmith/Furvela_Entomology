@@ -1,0 +1,13 @@
+theta_r_1 = 1/f
+theta_r_2=(log(f-1+p)-log(f))/log(p)
+Po_1 = M
+
+theta_solution = function(theta_o, Po, a0, fvalue){
+  theta_r = theta_o - (1-a0)/a0
+  result = (1 - Po^(1/theta_o))/(1 - Po^(theta_r/theta_o)) - fvalue
+return(result)}
+
+
+library(stats)
+theta_domain=c(1,10)
+root = uniroot(f=theta_solution, interval=theta_domain, Po=Po_1, a0=a0, fvalue=fvalue)

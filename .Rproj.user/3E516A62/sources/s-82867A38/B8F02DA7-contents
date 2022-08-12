@@ -1,5 +1,49 @@
 ################ JAGS CODE STORED AS STRINGS ############################
 
+modifiedBirleyModel = "
+  model{
+    for(t in 1:87){
+      parous[t] ~ dnegbin(ppar[t],r)
+      T_n[t] <- meanFemales[ptr[t]]
+      T_n1[t] <- meanFemales[lag1[t]]
+      T_n2[t] <- meanFemales[lag2[t]]
+      T_n3[t] <- meanFemales[lag3[t]]
+      T_n4[t] <- meanFemales[lag4[t]]
+  
+      # expected number parous per trap
+      m[t] <- (T_n2[t]*pr[1] + T_n3[t]*pr[2] + T_n4[t]*pr[3])*P
+  
+      # expected total parous among those tested
+      eParous[t] <- m[t]*dissected[t]/T_n[t]
+      ppar[t] <- r/(eParous[t] + r)  # Negative binomial p 
+      
+      # emergence rate (scaled to light trap collections) n.b. this may need to be constrained to be strictly positive
+      emergence[t] <- T_n[t] - m[t]
+      
+    }
+    for(i in 1:296){
+      meanFemales[i] <- meanFemalesRecorded[i]
+      logMeanFemales[i] <- log(meanFemales[i])
+    }
+    for(i in 297:513){
+      variation[i] ~ dnorm(0,tau.t)
+      meanFemales[i] <- exp(logtbar+variation[i])
+    }
+    logtbar <- mean(logMeanFemales)
+    # discretise the normal kernel for the cycle duration
+    pr[1] <- pnorm(2.5,cycle,tau.b)
+    pr[2] <- pnorm(3.5,cycle,tau.b) - pr[1]
+    pr[3] <- 1 - pr[1] - pr[2]
+    # priors
+    tau.t ~ dgamma(1,1)
+    sigma2 <- 1/tau.t
+    tau.b ~ dgamma(1,1)
+    r ~ dgamma(1,1)
+    cycle ~ dunif(1.5,4.5)
+    P ~dunif(0,1)
+    p <- exp(log(P)/cycle)
+  }
+"
 
 createListOfModels = function(){
   # Estimation of resting duration from exit traps: no imputation of missing data
