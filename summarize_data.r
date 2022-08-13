@@ -96,17 +96,20 @@ selectData = function(firstquarter=1,lastquarter=31,model='default', A0=0.6037, 
   date=workfile$date
   # for models of temperature dependence link in temperature data
   if(model == 'temperature'){
-    library("readxl")
-    meteo = read_excel('../some_like_it_hot/Mozambique_temperature_RAW_data.xlsx')
-    keeps = c('Year','Week','Mean Temp')
-    meteo_week = meteo[grep('Average', meteo$Day), keeps]
-    meteo_week = meteo_week[!is.na(meteo_week[['Mean Temp']]) & meteo_week[['Year']]== round(meteo_week[['Year']]),]
-    # compute week number for use as lookup
-    meteo_week$weekno=meteo_week[['Year']]*52 + meteo_week[['Week']] - 52*2001
     
+    # Weekly mean temperatures were computed as follows
+    # library("readxl")
+    # meteo = read_excel('../charlwood/some_like_it_hot/Mozambique_temperature_RAW_data.xlsx')
+    # keeps = c('Year','Week','Mean Temp')
+    # meteo_week = meteo[grep('Average', meteo$Day), keeps]
+    # meteo_week = meteo_week[!is.na(meteo_week[['Mean Temp']]) & meteo_week[['Year']]== round(meteo_week[['Year']]),]
+    # compute week number for use as lookup
+    # meteo_week$weekno=meteo_week[['Year']]*52 + meteo_week[['Week']] - 52*2001
+    # write.csv(meteo_week, file='weekly_mean_temperature.csv')
+    meteo_week =read.csv(file='weekly_mean_temperature.csv')
     lookup_avg_temp = function(x){
       weekno = trunc((176 + x)/7)
-      return(meteo_week[['Mean Temp']][which(meteo_week$weekno==weekno)[1]])
+      return(meteo_week[['Mean.Temp']][which(meteo_week$weekno==weekno)[1]])
     }
     avg_temp = sapply(date,lookup_avg_temp)
   } else { avg_temp = NA }

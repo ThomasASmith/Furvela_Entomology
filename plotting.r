@@ -178,6 +178,13 @@ plotSimulatedData = function() {
   return()
 }
 
+# saving plots
+library(grid)
+savePlot <- function(plot,Plotname,vertical_panels=2){
+  print(Plotname)
+  grid.newpage()
+  png(Plotname,width=18.5,height=18.5*vertical_panels/2,units="cm",res=600)
+  grid.draw(plot)
+  dev.off()
+}
 
-CorrelationPlot=plotCorrelations()
-remove('plotCorrelations')
