@@ -53,27 +53,14 @@ source('R-code/ExitTrapTimeSeriesAnalysis.r')
 option = 3
 source('R-code/ExitTrapTimeSeriesAnalysis.r')
 
+############ PLOTTING OF RESULTS #############
 
+source('R-code/plotting.r')
 
-source('R-code/JAGS_code.R')
-
-
-
-
-
-
-  
-  
 # To remove easily reproducible objects
- rm(list= ls()[! (ls() %in% c('SimulationsExitTraps','ConsistencyAnalysis',
-                              'BirleyResults','BirleyModelSimulations',
-                              'ExitTrapAnalysis','ExitTrapAnalysisByYear',
-                              'ExitTrapAnalysisByTemp','ExitTrapAnalysisByTempTrend'))])
-
-if(requireTablesPlots){
- source('R-code/plotting.r')
-}
-
-
+rm(list= ls()[! (ls() %in% c('SimulationsExitTraps','ConsistencyAnalysis',
+                             'BirleyResults','BirleyModelSimulations',
+                             'ExitTrapAnalysis','ExitTrapAnalysisByYear',
+                             'ExitTrapAnalysisByTemp','ExitTrapAnalysisByTempTrend'))])
 
 

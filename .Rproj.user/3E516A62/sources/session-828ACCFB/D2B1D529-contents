@@ -53,17 +53,9 @@ source('R-code/ExitTrapTimeSeriesAnalysis.r')
 option = 3
 source('R-code/ExitTrapTimeSeriesAnalysis.r')
 
+############ PLOTTING OF RESULTS #############
 
-
-source('R-code/JAGS_code.R')
-
-############## EVALUATION OF ESTIMATORS USING SIMULATIONS ###############
-
-
-
-if(requireTablesPlots){
- source('R-code/plotting.r')
-}
+source('R-code/plotting.r')
 
 # To remove easily reproducible objects
 rm(list= ls()[! (ls() %in% c('SimulationsExitTraps','ConsistencyAnalysis',
