@@ -1,9 +1,9 @@
 {
-    "path" : "C:/git_repos/charlwood/CBMC",
-    "sortOrder" : [
+    "path": "C:/git_repos/Furvela_Entomology",
+    "sortOrder": [
         {
-            "ascending" : true,
-            "columnIndex" : 2
+            "columnIndex": 2,
+            "ascending": true
         }
     ]
 }
