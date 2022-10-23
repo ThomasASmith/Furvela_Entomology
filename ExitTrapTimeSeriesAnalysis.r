@@ -1,19 +1,5 @@
 ################# ANALYSIS OF TIME SERIES OF EXIT TRAP DATA 
 
-# The analysis of exit trap data requires a valid workfile. 
-
-if( !exists('workfile') )
-{
-  source('summarize_data.r')
-}
-
-# Creation of JAGS input dataset for time-series analysis of Exit trap data
-
-
-
-################# Analysis of Exit Trap collections ################
-source('rjags_wrapper.R')
-
 analyseExitTrap = function(firstquarter=15,lastquarter=16){   
   data=selectData(firstquarter=firstquarter,lastquarter=lastquarter,A0=proportions$A0,P=0.528) 
   quantiles = analyseExitTrap_allmodels(all_quantiles=NULL,jagsdata=data$jagsdata,firstquarter=firstquarter)
@@ -343,6 +329,215 @@ model{
   A0 ~ dunif(0,1)         # proportion returning to feed within same night
 }  
 "
+
+SimulationsExitTrapsFixedSampleSize = function(nsimulations){
+  # sampling quarters 8-19 gives 207 days with complete data (precedes introduction of LLINs)
+  jagsdata = selectData(firstquarter=8,lastquarter=19,A0=proportions$A0,P=0.528)$jagsdata
+  # Analyse simulated datasets
+  all_simulated_quantiles = NULL
+  inputs_to_simulations = NULL
+  results = simulationsExitTraps(nsimulations = nsimulations,jagsdata=jagsdata)
+  return(results)  }
+
+consistencyAnalysis = function(nsimulations){
+  # Simulate and analyse datasets of varying sizes
+  for(i in 1:nsimulations){
+    firstquarter = sample(8:27, size=1)
+    lastquarter = sample(firstquarter:28, size=1)
+    jagsdata = selectData(firstquarter=firstquarter,lastquarter=lastquarter,A0=proportions$A0,P=0.528)$jagsdata
+    results = simulationsExitTraps(nsimulations = 1,jagsdata=jagsdata)
+    results$inputs_to_simulations$days_with_complete_data=jagsdata$days_with_complete_data
+    if(i == 1){
+      all_simulated_quantiles = results$simresults$parameters
+      inputs_to_simulations = results$inputs_to_simulations
+    } else {
+      all_simulated_quantiles = rbind(all_simulated_quantiles,results$simresults$parameters)
+      inputs_to_simulations = rbind(inputs_to_simulations,results$inputs_to_simulations)
+    }
+  }
+  all_results = list(all_simulated_quantiles, inputs_to_simulations)
+  simresults = post_process_quantiles(file=all_simulated_quantiles)
+  
+  all_results = list(simresults=simresults,inputs_to_simulations=inputs_to_simulations,jagsmodel=exittrap1)
+  return(all_results)}
+
+simulationsExitTraps = function(nsimulations = nsimulations,jagsdata=jagsdata){  
+  all_simulated_quantiles = NULL
+  inputs_to_simulations = NULL
+  variable.names = c("tau.b","rg","Teu","resting","pr","Tem","Pm","rm","P")
+  for(i in 1:nsimulations){
+    # parameters that might be recoverable
+    tau.b = runif(1, min = 0.5, max = 1.5)
+    rg = runif(1, min = 1, max = 4)
+    te = runif(1, min = 0.5, max = 2.0)
+    resting = runif(1, min = 1.0, max = 4.0)
+    Teu= runif(1, min = 1, max = 5)
+    Tem= runif(1, min = 1, max = 5)
+    rm = runif(1, min = 1, max = 4)
+    Pm = runif(1, min = 0, max = 1)
+    P = runif(1, min = 0, max = 1)
+    data0 = simulateExitTrapData(tau.b = tau.b, rg=rg, resting=resting,Teu=Teu,
+                                 Tem = Tem, Pm = Pm,rm = rm,A0=proportions$A0,P=P,jagsdata=jagsdata)
+    inputs=data.frame(data0$inputs)
+    inputs$days_with_complete_data=jagsdata$days_with_complete_data
+    # P known, sac rate as input
+    simulated_quantiles = parameterEstimates(jagsdata=data0$jagsdata,jagsmodel=exittrap1,variable.names=variable.names)
+    simulated_quantiles$simulation=i
+    simulated_quantiles$jagsModel='exittrap1'
+    all_simulated_quantiles = rbind(all_simulated_quantiles,simulated_quantiles)
+    # P fixed at 0.75
+    data0$jagsdata$P = 0.75
+    simulated_quantiles = parameterEstimates(jagsdata=data0$jagsdata,jagsmodel=exittrap1,variable.names=variable.names)
+    simulated_quantiles$simulation=i
+    simulated_quantiles$jagsModel='P_075'
+    all_simulated_quantiles = rbind(all_simulated_quantiles,simulated_quantiles)
+    # P known, A0 fixed at 0.3
+    data0$jagsdata$P = inputs$P
+    data0$jagsdata$A0 = 0.3 
+    simulated_quantiles = parameterEstimates(jagsdata=data0$jagsdata,jagsmodel=exittrap1,variable.names=variable.names)
+    simulated_quantiles$simulation=i
+    simulated_quantiles$jagsModel='A_03'
+    all_simulated_quantiles = rbind(all_simulated_quantiles,simulated_quantiles)
+    # P estimated
+    data0$jagsdata$P = NULL
+    data0$jagsdata$A0 = inputs$A0 
+    simulated_quantiles = parameterEstimates(jagsdata=data0$jagsdata,jagsmodel=exittrap1,variable.names=variable.names)
+    simulated_quantiles$simulation=i
+    simulated_quantiles$jagsModel='P_est'
+    all_simulated_quantiles = rbind(all_simulated_quantiles,simulated_quantiles)
+    # Teu known, P Estimated
+    data0$jagsdata$Teu = inputs$Teu
+    simulated_quantiles = parameterEstimates(jagsdata=data0$jagsdata,jagsmodel=exittrap1,variable.names=variable.names)
+    simulated_quantiles$simulation=i
+    simulated_quantiles$jagsModel='Teu_known'
+    all_simulated_quantiles = rbind(all_simulated_quantiles,simulated_quantiles)
+    # Teu, Tem known, P Estimated
+    data0$jagsdata$Tem = inputs$Tem
+    simulated_quantiles = parameterEstimates(jagsdata=data0$jagsdata,jagsmodel=exittrap1,variable.names=variable.names)
+    simulated_quantiles$simulation=i
+    simulated_quantiles$jagsModel='Tem_known'
+    all_simulated_quantiles = rbind(all_simulated_quantiles,simulated_quantiles)
+    inputs_to_simulations = rbind(inputs_to_simulations,inputs)
+  }  
+  simresults = post_process_quantiles(file=all_simulated_quantiles)
+  results=list(simresults=simresults,inputs_to_simulations=inputs_to_simulations,jagsmodel=exittrap1)
+  return(results)}
+
+# Create simulated exit trap dataset for analysis of survival and cycle duration
+simulateExitTrapData = function(tau.b = 2.0, 
+                                rg = 3,
+                                resting = 2,
+                                Teu = 3,
+                                model='default',
+                                Tem = 4,
+                                Pm = 0.5,
+                                rm = 3,
+                                A0=A0,
+                                P=M,
+                                jagsdata=jagsdata,
+                                requirePlot=FALSE){
+  # discretise the normal kernel for the cycle duration
+  pr = rep(NA,4)
+  pr[1] = pnorm(1.5,resting,tau.b)
+  pr[2] = pnorm(2.5,resting,tau.b) - pr[1]
+  pr[3] = pnorm(3.5,resting,tau.b) - pr[1] - pr[2]
+  pr[4] = 1 - pr[1] - pr[2] - pr[3]
+  
+  # generate simulated numbers of unfed per trap with autocorrelation
+  U=jagsdata$unfed1/jagsdata$traps
+  acf.obs = as.vector(acf(U,lag.max=1)[[1]][]) 
+  # draw an iid sample extended by xtr extra dates so that a 'burn-in' period for the number of gravids can be included
+  xtr=150
+  T0_iid = sample(U,size=length(U)+xtr,replace=TRUE)
+  T0a <- stats::filter(T0_iid, filter=acf.obs, circular = T)
+  T0b = T0a*mean(U)/mean(T0a)
+  sdratio = sd(U)/sd(T0b)
+  T0x = mean(U) + (T0b - mean(U))*sdratio
+  T0x = ifelse(T0x < 1, 1,T0x)
+  emergence = em = eg = rep(NA,length(T0x))
+  emergenceRate = 'unfed'
+  if(emergenceRate == 'unfed'){
+    # if unfeds measure emergence then numbers of gravid per trap depend on previous gravids as well as on unfeds
+    # eg is the simulated expected number of gravids per trap
+    # the values at the start of the burn-in are irrelevant, as are mosquitoes emerging prior to the burn-in (these have negligible effect on the main sequence)
+    # so the sequence can be initialised at an arbitrary value
+    for (t in 1:5){
+      #expected gravid
+      eg[t] <- 1
+      emergence[t] <- T0x[t]
+    }  
+    for (t in 6:length(T0x)){
+      emergence[t] <- T0x[t]
+      # expected gravids in first cycle
+      eg0 <- (T0x[t-1]*pr[1] + T0x[t-2]*pr[2] + T0x[t-3]*pr[3] + T0x[t-4]*pr[4])* Teu 
+      # expected gravids in subsequent cycles
+      eg1 <- eg[t-1]*pr[1] + eg[t-2]*pr[2] + eg[t-3]*pr[3] + eg[t-4]*pr[4]
+      eg2 <- eg[t-2]*pr[1] + eg[t-3]*pr[2] + eg[t-4]*pr[3] + eg[t-5]*pr[4]
+      eg[t] <- (eg0 + A0*eg1 + (1-A0)*eg2)*P
+      eg[t] <- max(eg[t],1) # constrain the expectation to be positive
+    }
+  } else {
+    # if unfeds include survivors from previous cycle then ignore previous gravids and Teu includes the survival effect
+    eg[t] <- (T0x[t-1]*pr[1] + T0x[t-2]*pr[2] + T0x[t-3]*pr[3] + T0x[t-4]*pr[4])* Teu * P 
+    eg[t] <- max(eg[t],1) # constrain the expectation to be positive
+    
+    #emergence calculated as the difference between total unfed and survivors from the previous cycle
+    # - for the case where there is no delay from oviposition to host seeking
+    e1 <- T0x[ptr[t]] - (T0x[t-1]*pr[1] + T0x[t-2]*pr[2] + T0x[t-3]*pr[3] + T0x[t-4]*pr[4])*P 
+    # - for the case where there is a one night delay
+    e2 <- T0x[ptr[t]] - (T0x[t-2]*pr[1] + T0x[t-3]*pr[2] + T0x[t-4]*pr[3] + T0x[t-5]*pr[4])*P  
+    # overall average
+    emergence[t] <- max(0.001,A0*e1 + (1-A0)*e2)
+  }
+  #expected males
+  em[1] <- Tem*emergence[1] 
+  for (t in 2:length(T0x)){
+    em[t] <- Tem*emergence[t] + Pm * em[t-1]
+  }
+  # remove the 'burn-in'
+  T0 = T0x[(xtr+1):length(T0x)]
+  em = em[(xtr+1):length(T0x)]
+  emergence = emergence[(xtr+1):length(T0x)]
+  eg = eg[(xtr+1):length(T0x)]
+  
+  # Multiply by number of traps and add negative binomial variation to the simulated values
+  traps = jagsdata$traps
+  males = gravid = rep(NA,length(traps))
+  for(t in 1:length(traps)){
+    males[t] = rnbinom(n=1, size=rm, mu=traps[t]*em[t])
+    gravid[t] = rnbinom(n=1, size=rg, mu=traps[t] * eg[t])
+  }
+  unfed1 = round(as.numeric(traps*T0),0)
+  if(requirePlot) {
+    plt= plotSimulatedData() 
+  } else { plt = NULL }
+  inputs = list(tau.b = tau.b, rg = rg, resting = resting, Teu = Teu, Tem = Tem, rm = rm, Pm = Pm, A0 = A0, P=P)
+  jagsdata$unfed1= unfed1
+  jagsdata$gravid= gravid
+  # duplicate the vector of numbers of gravids to allow fitting of two different sets of parameters
+  jagsdata$log.unfed= log(unfed1)
+  jagsdata$males = males
+  jagsdata$gravid1 = gravid
+  jagsdata$males1 = males
+  jagsdata$A0 = A0
+  jagsdata$P = P
+  simulation=list(inputs=inputs,jagsdata=jagsdata, plt=plt)
+  return(simulation)}
+
+
+# Function calls start here
+# The analysis of exit trap data requires a valid workfile. 
+
+if( !exists('workfile') )
+{
+  source('summarize_data.r')
+}
+
+# Creation of JAGS input dataset for time-series analysis of Exit trap data
+source('rjags_wrapper.R')
+source('postprocessing.r')
+source('plotting.r')
+
 variable.names = c("cycle","tau.b","Teu","resting","pr","Tem","Pm","P","p","emergence")
 
 switch (option, 
@@ -357,10 +552,11 @@ switch (option,
     },
     {
       exittrap1 = exittrap_base  
-      SimulationsExitTraps = SimulationsExitTrapsFixedSampleSize(nsimulations=100)    
+      SimulationsExitTraps = SimulationsExitTrapsFixedSampleSize(nsimulations=5)   #change to 100 
     },
     {
       exittrap1 = exittrap_base
+      ConsistencyAnalysis = consistencyAnalysis(nsimulations=5)  #change to 50 
     },
     {
       # Estimate survival, cycle length and sac rate from exit-trap data by year
@@ -372,14 +568,21 @@ switch (option,
       variable.names = c("resting","cycle","Teu","Tem","Pm","P","p")
       exittrap1 = exittrap_temp
       ExitTrapAnalysisByTemp = analyseExitTrapByTemp()
-      savePlot(ExitTrapAnalysisByTemp$plt1,'ExitTrapAnalysisByTemp.png',vertical_panels=2)
       variable.names = c("resting","cycle","Teu","Tem","Pm0","Pm1","P0","P1")
       exittrap1 = exittrap_temptrend
       ExitTrapAnalysisByTempTrend = analyseExitTrapByTempTrend()
     }
 )
 
-remove(list=c("analyseExitTrap","resting_sample","analyseExitTrap_allmodels","exittrap_base","exittrap_temp","exittrap_temptrend",
-  "exittrap1", "option", "parameterEstimates", "theta_exit", "variable.names", "workfile"))     
-
+# remove functions and variables that are required only in this script
+suppressWarnings(
+remove(list=c("analyseExitTrap","resting_sample","analyseExitTrap_allmodels","exittrap_base",
+              "exittrap_temp","exittrap_temptrend","exittrap1", "option", "parameterEstimates", 
+              "theta_exit", "variable.names","analyseExitTrapByTemp",
+              "analyseExitTrapByTempTrend","analyseExitTrapByYear","consistencyAnalysis",
+              "extract_index","extract_quantiles","extract_varnames","post_process_quantiles",
+              "simulateExitTrapData","simulationsExitTraps",
+              "SimulationsExitTrapsFixedSampleSize","summarise_by_method","summarise_by_quarter",
+              "get_mp_recomCol","plotConsistency","plotCorrelations","plotEstimatesByTemp","errbarPlot",
+              "plotEstimatesByTime","plotSimulatedData","plotSimulations_vs_Inputs")))
 

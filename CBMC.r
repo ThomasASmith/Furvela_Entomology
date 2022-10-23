@@ -77,6 +77,6 @@ if(requireTablesPlots){
   savePlot(ConsistencyPlots$plt2,'ExitTrapConsistencyMales.png',vertical_panels=1)
 }
 
-save.image("C:/git_repos/charlwood/CBMC/fullenvironment.RData") 
+
 
 
