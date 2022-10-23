@@ -1,0 +1,26 @@
+{
+    "id": "6E54B357",
+    "path": "C:/git_repos/Furvela_Entomology/calling_script.r",
+    "project_path": "calling_script.r",
+    "type": "r_source",
+    "hash": "1524861567",
+    "contents": "",
+    "dirty": true,
+    "created": 1666513293401.0,
+    "source_on_save": false,
+    "relative_order": 3,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "53,0",
+        "scrollLine": "27"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1666517097,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1666517097918,
+    "read_only": false,
+    "read_only_alternatives": []
+}
