@@ -15,6 +15,9 @@ source('R-code/summarize_data.r')
 # To load pre-existing analysis results
 load("timeseriesAnalyses.RData")
 
+######## To carry out new analyses ########
+# First replace the pre-existing data with the data to be analysed
+
 # Analysis of resting collections (equations # in Charlwood et al,....)
 source('R-code/resting_collection_analysis.r')
 
@@ -54,23 +57,18 @@ source('R-code/ExitTrapTimeSeriesAnalysis.r')
 
 source('R-code/JAGS_code.R')
 
+############## EVALUATION OF ESTIMATORS USING SIMULATIONS ###############
 
 
-
-
-
-  
-  
-# To remove easily reproducible objects
- rm(list= ls()[! (ls() %in% c('SimulationsExitTraps','ConsistencyAnalysis',
-                              'BirleyResults','BirleyModelSimulations',
-                              'ExitTrapAnalysis','ExitTrapAnalysisByYear',
-                              'ExitTrapAnalysisByTemp','ExitTrapAnalysisByTempTrend'))])
 
 if(requireTablesPlots){
  source('R-code/plotting.r')
 }
 
-
+# To remove easily reproducible objects
+rm(list= ls()[! (ls() %in% c('SimulationsExitTraps','ConsistencyAnalysis',
+                             'BirleyResults','BirleyModelSimulations',
+                             'ExitTrapAnalysis','ExitTrapAnalysisByYear',
+                             'ExitTrapAnalysisByTemp','ExitTrapAnalysisByTempTrend'))])
 
 

@@ -15,6 +15,9 @@ source('R-code/summarize_data.r')
 # To load pre-existing analysis results
 load("timeseriesAnalyses.RData")
 
+######## To carry out new analyses ########
+# First replace the pre-existing data with the data to be analysed
+
 # Analysis of resting collections (equations # in Charlwood et al,....)
 source('R-code/resting_collection_analysis.r')
 
