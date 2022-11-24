@@ -11,11 +11,11 @@ errbarPlot = function(data,low,med,high,xname,yname,ylimits,logscale=TRUE,requir
   data$high=high
   plt = ggplot(data = data,aes(x = lag, group = yname)) + theme_bw() +
     theme(text = element_text(size=12)) +
-    
+
     scale_colour_manual(values=get_mp_recomCol(),name='Mosquito category') +
     geom_errorbar(aes(ymin=low,
                       ymax=high, width = 0.5, colour = yname), show.legend=requireLegend) +
-    theme(legend.position = c(.75,.82))+ 
+    theme(legend.position = c(.75,.82))+
     scale_fill_manual(values=get_mp_recomCol(), guide = 'none') +
     geom_point(aes(y=rs, colour = yname), size=5,show.legend=FALSE) +
     scale_x_continuous(name = xname,limits=c(-1,11), breaks=c(0,2,4,6,8,10))
@@ -42,11 +42,11 @@ plotEstimatesByTime = function(param,paramLabel,results=results,requirelegend=FA
                       ymax=X97.5., width = 0.5, colour = jagsModel), show.legend=FALSE) +
     scale_fill_manual(values=get_mp_recomCol(), guide = 'none') +
     geom_point(aes(y=X50., colour = jagsModel), shape=21, size=3, stroke = 1.5, show.legend=requirelegend) +
-    theme(legend.position = c(.6,.75))+  
+    theme(legend.position = c(.6,.75))+
     theme(legend.background = element_rect(colour = 'black', fill = 'white', linetype='solid')) +
     scale_y_continuous(name = paramLabel) +
     scale_x_continuous(name = 'Year',limits=c(8,32), breaks=c(8.5,12.5,16.5,20.5,24.5,28.5),labels=ticklabels) +
-    geom_vline(xintercept=22.5) 
+    geom_vline(xintercept=22.5)
   return(plt)}
 
 # plot of estimates by temperature range
@@ -67,7 +67,7 @@ plotEstimatesByTemp = function(param,paramLabel,results=results,requirelegend=FA
                       ymax=X97.5., width = 0.2, colour = jagsModel), show.legend=FALSE) +
     scale_fill_manual(values=get_mp_recomCol()) +
     geom_point(aes(y=X50., colour = jagsModel), shape=21, size=3, stroke = 1.5, show.legend=requirelegend) +
-    theme(legend.position = c(.35,.09))+ 
+    theme(legend.position = c(.35,.09))+
     guides(colour = guide_legend(nrow = 1,label.position = "left"))+
     theme(legend.background = element_rect(colour = 'black', fill = 'white', linetype='solid'),
           legend.title=element_blank(),
@@ -80,7 +80,7 @@ plotEstimatesByTemp = function(param,paramLabel,results=results,requirelegend=FA
 plotSimulations_vs_Inputs = function(data, textLabel,xlim, nmodels=5, requirelegend= FALSE){
   plt= ggplot(data = data,aes(x = input, y=X50., group = jagsModel)) + theme_bw(base_size = 9) +
     theme(legend.background = element_rect(colour = 'black', fill = 'white', linetype='solid')) +
-    theme(legend.position = c(.8,.5)) +    
+    theme(legend.position = c(.8,.5)) +
     geom_point(aes(y=X50.,colour = jagsModel, shape = jagsModel), size=2, stroke = 1.5, show.legend=requirelegend) +
     scale_colour_discrete(name='Constraints') +
     scale_shape_manual(name='Constraints',values=(seq(1:nmodels)-1)) +
@@ -95,7 +95,7 @@ plotConsistency = function(data, textLabel,nmodels=5, requirelegend= FALSE){
   data$sqe = (data$X50.- data$input)^2
   plt= ggplot(data = data,aes(x = days_with_complete_data, y=ratio, group = jagsModel)) + theme_bw(base_size = 9) +
     theme(legend.background = element_rect(colour = 'black', fill = 'white', linetype='solid')) +
-    theme(legend.position = c(.1,.32)) +    
+    theme(legend.position = c(.1,.32)) +
     #geom_point(aes(y=sqe,colour = jagsModel, shape = jagsModel), size=2, stroke = 1.5) +
     geom_smooth(aes(y=sqe,colour = jagsModel), size=1, show.legend=requirelegend) +
     scale_colour_discrete(name=element_blank()) +
@@ -124,7 +124,7 @@ plotCorrelations = function(){
       corr = rbind(corr,corr_lag,corr1_lag)
     }
     return(corr)}
-  
+
   # Function to calculate Spearman autocorrelations for different lags
   calculate_autocorrelations <- function(df1=df1) {
     corr = spearman_CI(x=df1$mean.Af.maleEx,y=df1$mean.Af.maleEx,yname="male")
@@ -151,14 +151,14 @@ plotCorrelations = function(){
 
   ##### Calculate correlations for plotting ##############
   spearman_CI <- function(x, y, yname, alpha = 0.05){
-    # approximate 95% CI following Bonett and Wright (2000) https://doi.org/10.1007/BF02294183 
+    # approximate 95% CI following Bonett and Wright (2000) https://doi.org/10.1007/BF02294183
     y = y[1:length(x)]
     rs = cor(x, y, method = "spearman", use = "complete.obs")
     n = sum(complete.cases(x, y))
     CI = sort(tanh(atanh(rs) + c(-1,1)*sqrt((1+rs^2/2)/(n-3))*qnorm(p = alpha/2)))
     result = data.frame(yname=yname,nobs=n, rs=rs, lower=CI[1], upper=CI[2])
     return(result)}
-  
+
   data= selectData(firstquarter=1,lastquarter=32)
   df1=data$df1
   corr= calculate_correlations(df1=df1)
@@ -178,9 +178,9 @@ plotSimulatedData = function() {
   toPlot$var = as.factor(rep(c('Emergence','Males','Gravid'),each=length(em)))
   toPlot$time = rep(seq(1:length(T0x)),3)
   ggplot(data=toPlot,aes(x=time,y=value, colour=var)) +
-    geom_point() + 
+    geom_point() +
     theme_bw() +
-    theme(text = element_text(size=12)) 
+    theme(text = element_text(size=12))
   return()
 }
 
@@ -189,33 +189,33 @@ plotSimulatedData = function() {
 savePlot <- function(plot,Plotname,vertical_panels=2){
   print(Plotname)
   grid.newpage()
-  png(Plotname,width=18.5,height=18.5*vertical_panels/2,units="cm",res=600)
+  png(Plotname,width=18.5,height=18.5*vertical_panels/2,units="cm",res=900)
   grid.draw(plot)
   dev.off()
 }
 
-createTables_Plots = function(input,plottype='bias'){  
+createTables_Plots = function(input,plottype='bias'){
   # Plots of simulation results for females
   simresults=input$simresults
   inputs_to_simulations=input$inputs_to_simulations
-  
+
   plt1 = NULL
   plt2 = NULL
   CCCTable = NULL
   library(tidyr)
   library(qwraps2)
-  
-  
-  calculateBias = function(df,Var){ 
-    df1 = df %>% 
-      group_by(jagsModel) %>%  
+
+
+  calculateBias = function(df,Var){
+    df1 = df %>%
+      group_by(jagsModel) %>%
       summarise(N=n(),
-                mean.ci = list(mean_ci((X50.-input)/input))) %>% 
+                mean.ci = list(mean_ci((X50.-input)/input))) %>%
       unnest_wider(mean.ci)
     df1$Var=Var
     return(df1)}
-  
-  resultsFemales = simresults$parameters[which(simresults$parameters$jagsModel %in% 
+
+  resultsFemales = simresults$parameters[which(simresults$parameters$jagsModel %in%
                                                  c('exittrap1','P_075','A_03','P_est','Teu_known')),]
   nmodels=5
   resultsFemales$jagsModel[resultsFemales$jagsModel=='exittrap1']= 'a'
@@ -226,16 +226,16 @@ createTables_Plots = function(input,plottype='bias'){
   toPlot1a = data.frame(resultsFemales[resultsFemales$Var=='Teu',],
                         input=rep(inputs_to_simulations$Teu,each=nmodels),
                         days_with_complete_data=rep(inputs_to_simulations$days_with_complete_data,each=nmodels))
-  
+
   toPlot1b = data.frame(resultsFemales[resultsFemales$Var=='P',],
                         input=rep(inputs_to_simulations$P,each=nmodels),
                         days_with_complete_data=rep(inputs_to_simulations$days_with_complete_data,each=nmodels))
   toPlot1c = data.frame(resultsFemales[resultsFemales$Var=='resting',],
                         input=rep(inputs_to_simulations$resting,each=nmodels),
                         days_with_complete_data=rep(inputs_to_simulations$days_with_complete_data,each=nmodels))
-  
+
   # Plots of simulation results for males
-  resultsMales = simresults$parameters[which(simresults$parameters$jagsModel %in% 
+  resultsMales = simresults$parameters[which(simresults$parameters$jagsModel %in%
                                                c('Teu_known','Tem_known')),]
   nmodels=2
   resultsMales$jagsModel[resultsMales$jagsModel=='Teu_known']= 'a'
@@ -249,7 +249,7 @@ createTables_Plots = function(input,plottype='bias'){
   bias = rbind(bias, calculateBias(df=toPlot1c,Var='resting'))
   bias = rbind(bias, calculateBias(df=toPlot2a,Var='Pm'))
   bias = rbind(bias, calculateBias(df=toPlot2b,Var='Tem'))
-  library(ggplot2)  
+  library(ggplot2)
   library(cowplot)
   if (plottype == 'bias'){
     p1a=plotSimulations_vs_Inputs(data= toPlot1a, textLabel='trapping efficiency: gravids', xlim= c(0,8),requirelegend=TRUE)
@@ -273,10 +273,10 @@ createTables_Plots = function(input,plottype='bias'){
     p2b=plotConsistency(data=toPlot2b, textLabel='trapping efficiency: males',nmodels=2)
     plt2 = plot_grid(p2a, p2b, labels = c('A', 'B'), label_size = 12,ncol=2)
   }
-  
+
 # calculation of concordance correlation coefficients
   CCCTable = function(inputdf){
-    library(epiR)    
+    library(epiR)
     df = data.frame(Var=c(),model=c(),CCC=c(),lower=c(),upper=c())
     # use only variables that are found in the input data frame
     for(Var in levels(as.factor(as.character(inputdf$Var)))){
@@ -285,7 +285,7 @@ createTables_Plots = function(input,plottype='bias'){
         rho.c = with(dfsub,epi.ccc(X50., input, ci = "z-transform", conf.level = 0.95, rep.measure = FALSE))$rho.c
         df1 = data.frame(Var=Var,model=model,CCC=rho.c[1],lower=rho.c[2],upper=rho.c[3])
         df=rbind(df,df1)
-      }  
+      }
     }
     return(df)
   }
@@ -296,17 +296,20 @@ createTables_Plots = function(input,plottype='bias'){
 
 
 ################# MAIN SCRIPT FOR PLOTTING IS HERE ###################
-library(ggplot2)
-library(grid)
-CorrelationPlot=plotCorrelations()
-BiasPlots = createTables_Plots(input=SimulationsExitTraps,plottype='bias')
-ConsistencyPlots = createTables_Plots(input=ConsistencyAnalysis,plottype='consistency')
-savePlot(CorrelationPlot,'Autocorrelations.png',vertical_panels=2)
-savePlot(ExitTrapAnalysisByYear$plt1,'ExitTrapAnalysisByYearFemales.png',vertical_panels=2)
-savePlot(ExitTrapAnalysisByYear$plt2,'ExitTrapAnalysisByYearMales.png',vertical_panels=1)
-savePlot(ExitTrapAnalysisByTemp$plt1,'ExitTrapAnalysisByTemp.png',vertical_panels=2)
-savePlot(BiasPlots$plt1,'ExitTrapSimulationsFemales.png',vertical_panels=2)
-savePlot(BiasPlots$plt2,'ExitTrapSimulationsMales.png',vertical_panels=1)
-savePlot(ConsistencyPlots$plt1,'ExitTrapConsistencyFemales.png',vertical_panels=2)
-savePlot(ConsistencyPlots$plt2,'ExitTrapConsistencyMales.png',vertical_panels=1)
-
+if (requirePlotoutput){
+  library(ggplot2)
+  library(grid)
+  CorrelationPlot=plotCorrelations()
+  BiasPlots = createTables_Plots(input=SimulationsExitTraps,plottype='bias')
+  ConsistencyPlots = createTables_Plots(input=ConsistencyAnalysis,plottype='consistency')
+  savePlot(Furvela_data$summary_by_quarter$plt,'Figure01.png',vertical_panels=1)
+  savePlot(CorrelationPlot,'Figure02.png',vertical_panels=2)
+  savePlot(BirleyModelSimulations$plt,'Figure03.png',vertical_panels=1)
+  savePlot(BiasPlots$plt1,'Figure04.png',vertical_panels=2)
+  savePlot(ConsistencyPlots$plt1,'Figure05.png',vertical_panels=2)
+  savePlot(BiasPlots$plt2,'Figure06.png',vertical_panels=1)
+  savePlot(ConsistencyPlots$plt2,'Figure07.png',vertical_panels=1)
+  savePlot(ExitTrapAnalysisByYear$plt1,'Figure08.png',vertical_panels=2)
+  savePlot(ExitTrapAnalysisByYear$plt2,'Figure09.png',vertical_panels=1)
+  savePlot(ExitTrapAnalysisByTemp$plt1,'Figure10.png',vertical_panels=2)
+}

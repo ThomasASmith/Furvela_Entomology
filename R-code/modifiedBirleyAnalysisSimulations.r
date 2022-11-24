@@ -1,7 +1,8 @@
 ####### Use simulations to evaluate performance of modified Birley model ##################
 
 # Create simulated light trap dataset for analysis of survival and cycle duration
-simulateBirleyData = function(tau.b = 0.75,
+simulateBirleyData = function(MBData=MBData,
+                              tau.b = 0.75,
                               r = 3,
                               cycle = 4,
                               P = 0.6){
@@ -10,12 +11,12 @@ simulateBirleyData = function(tau.b = 0.75,
   pr[1] = pnorm(2.5,cycle,tau.b)
   pr[2] = pnorm(3.5,cycle,tau.b) - pr[1]
   pr[3] = 1 - pr[1] - pr[2]
-  # 
-  
+  #
+
   EX = mean(BirleyEmergenceRates)
   VarX = var(BirleyEmergenceRates)
-  # extract autocorrelation function 
-  acf.obs = as.vector(acf(BirleyEmergenceRates)[[1]][]) 
+  # extract autocorrelation function
+  acf.obs = as.vector(acf(BirleyEmergenceRates)[[1]][])
   muLogN = log(EX*EX/sqrt(VarX + EX*EX))
   sigmaLogN = sqrt(log(VarX/(EX*EX) + 1))
   emergence_iid = rlnorm(513, meanlog = muLogN, sdlog = sigmaLogN)
@@ -23,7 +24,7 @@ simulateBirleyData = function(tau.b = 0.75,
   emergence <- stats::filter(emergence_iid, filter=acf.obs, circular = T)
   # set negative values to zero
   emergence[emergence < 0] = 0
-  
+
   meanFemales = rep(NA,513)
   for (t in 1:513){
     meanFemales[MBData$ptrs$ptr[t]]= emergence[MBData$ptrs$ptr[t]]
@@ -33,7 +34,7 @@ simulateBirleyData = function(tau.b = 0.75,
   }
   # trap rare near-zero females and replace with 1
   meanFemales[meanFemales < 1] = 1
-  
+
   T0=T_1=T_2=T_3=T_4=M=eParous=parous=rep(NA,87)
   jagsdata = MBData$jagsdata
   for(t in 1:87){
@@ -59,7 +60,7 @@ simulateBirleyData = function(tau.b = 0.75,
 
 
 ################ ANALYSIS OF SIMULATED DATASETS ########################
-SimulationsBirleyModel = function(nsimulations,BirleyEmergenceRates){
+SimulationsBirleyModel = function(nsimulations,BirleyEmergenceRates,MBData){
   all_simulated_quantiles = NULL
   inputs_to_simulations = NULL
   variable.names = c("tau.b","r","cycle","P")
@@ -71,7 +72,7 @@ SimulationsBirleyModel = function(nsimulations,BirleyEmergenceRates){
     P = runif(1, min = 0, max = 1)
     inputs = data.frame(tau.b = tau.b,r = r,cycle = cycle,P = P)
     inputs_to_simulations = rbind(inputs_to_simulations,inputs)
-    simulatedData=simulateBirleyData(tau.b = tau.b,r = r,cycle = cycle,P = P)
+    simulatedData=simulateBirleyData(MBData=MBData,tau.b = tau.b,r = r,cycle = cycle,P = P)
     simulated_quantiles = parameterEstimates(jagsdata= simulatedData,jagsmodel=modifiedBirleyModel,variable.names=variable.names)
     simulated_quantiles$simulation=i
     simulated_quantiles$jagsModel='modifiedBirleyModel'
@@ -91,7 +92,10 @@ SimulationsBirleyModel = function(nsimulations,BirleyEmergenceRates){
 
 ####### CALLING SCRIPT
 
-BirleyEmergenceRates = BirleyResults$X50.[BirleyResults$Var == 'emergence']
+source('R-code/rjags_wrapper.R')
+source('R-code/modifiedBirleyAnalysis.R')
+BirleyEmergenceRates = BirleyAnalyis$BirleyResults$X50.[BirleyAnalyis$BirleyResults$Var == 'emergence']
 BirleyModelSimulations=SimulationsBirleyModel(nsimulations=20,
-                                              BirleyEmergenceRates = BirleyEmergenceRates)
+                                              BirleyEmergenceRates = BirleyEmergenceRates,
+                                              MBData=BirleyAnalyis$MBData)
 

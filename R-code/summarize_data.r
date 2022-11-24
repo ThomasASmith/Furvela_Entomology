@@ -32,7 +32,7 @@ get_Furvela_data = function(){
       sporozoites_table	= sporozoites_table)
     return(description)
   }
-  
+
   analysis_of_proportions = function(dissections){
   ################# Interval estimates of proportions #####################
     parous = sum(dissections$Sac + dissections$No.sac)
@@ -47,15 +47,15 @@ get_Furvela_data = function(){
     fdenom = 6379+791+5121
     fvalue = 6379/fdenom
     f_sample = rbinom(1000,fdenom,fvalue)/fdenom
-    proportions = list(M=M, M_interval=M_interval, M_sample=M_sample, 
+    proportions = list(M=M, M_interval=M_interval, M_sample=M_sample,
                        A0=A0, A0_sample=A0_sample, A0_interval=A0_interval,
                        fvalue = fvalue, f_sample=f_sample)
     return(proportions)}
-  
+
   get_timeseries = function(datalist) {
     # Create a time series with integer dates ensuring that there is at least one record for each date
     alldates = data.frame(date=as.numeric(as.Date(
-      datalist$mosquito_collection$date,'%d/%m/%Y')))-as.numeric(as.Date("26/06/2001", format = "%d/%m/%Y")) 
+      datalist$mosquito_collection$date,'%d/%m/%Y')))-as.numeric(as.Date("26/06/2001", format = "%d/%m/%Y"))
     workfile = datalist$mosquito_collection
     workfile$date = alldates$date
     return(workfile)
@@ -66,11 +66,11 @@ get_Furvela_data = function(){
   casa = read.csv(file='Casa.csv')
   morte = read.csv(file='Morte.csv')
   mosquiteiro = read.csv(file='Mosquiteiro.csv')
-  mosquito_collection = read.csv2(file='Mosquito_Collection.csv',sep = ",")
+  mosquito_collection = read.csv2(file='Mosquito_Collection.csv',sep = ",",fileEncoding = "latin1")
   pessao = read.csv(file='Pessao.csv')
   sporozoites=read.csv(file='Sporozoites.csv')
   dissections=read.csv(file='dissections.csv')
-  
+
   ################ Data descriptions
   Furvela_data = list(animais=animais,
                       casa=casa,
@@ -80,11 +80,11 @@ get_Furvela_data = function(){
                       pessao=pessao,
                       sporozoites = sporozoites,
                       dissections = dissections)
-  
+
   Furvela_data$description = data_description(datalist=Furvela_data)
   Furvela_data$proportions = analysis_of_proportions(dissections=Furvela_data$dissections)
   Furvela_data$workfile = get_timeseries(datalist=Furvela_data)
-  
+
   return(Furvela_data)
 }
 
@@ -96,7 +96,7 @@ selectData = function(firstquarter=1,lastquarter=31,model='default', A0=0.6037, 
   date=workfile$date
   # for models of temperature dependence link in temperature data
   if(model == 'temperature'){
-    
+
     # Weekly mean temperatures were computed as follows
     # library("readxl")
     # meteo = read_excel('../charlwood/some_like_it_hot/Mozambique_temperature_RAW_data.xlsx')
@@ -113,7 +113,7 @@ selectData = function(firstquarter=1,lastquarter=31,model='default', A0=0.6037, 
     }
     avg_temp = sapply(date,lookup_avg_temp)
   } else { avg_temp = NA }
-  
+
   # For exit trap analysis restrict to period with exit traps
   start = min(date[!is.na(workfile$Af.unfed)])
   date_offset = date[!is.na(workfile$Af.unfed)] - start + 1
@@ -126,7 +126,7 @@ selectData = function(firstquarter=1,lastquarter=31,model='default', A0=0.6037, 
   Af.femaleLT = with(workfile,ifelse(Collection=='Light',Af.female,NA))
   Af.unfed1[date > maxdate | date < mindate] = NA
   Af.maleEx[date > maxdate | date < mindate] = NA
-  Af.old[date > maxdate | date < mindate] = NA 
+  Af.old[date > maxdate | date < mindate] = NA
   df = data.frame(cbind(Af.unfed1,Af.maleEx,Af.gravid,Af.old,date,avg_temp))
   df = as.data.frame(sapply(df[,1:6],function(x) as.numeric(as.character(x))))
   df = df[!is.na(df$date) & df$date <= maxdate & df$date >= mindate & !is.na(df$Af.gravid),]
@@ -143,8 +143,8 @@ selectData = function(firstquarter=1,lastquarter=31,model='default', A0=0.6037, 
                                       mean_temp = mean(avg_temp)))
   df1$date=df1$date-min(df1$date) + 1
   ndates=max(df1$date)
-  
-  # create a pointer for finding lagged numbers of unfed 
+
+  # create a pointer for finding lagged numbers of unfed
   df1b= merge(df1,data.frame(date=seq(1:max(df1$date))),by='date',all=TRUE)
   i1=0
   i20=length(which(!is.na(df1$sum.Af.unfed1)))
@@ -164,13 +164,13 @@ selectData = function(firstquarter=1,lastquarter=31,model='default', A0=0.6037, 
   df1b$lag3=c(i20+3,df1b$lag2[1:(ndates-1)])
   df1b$lag4=c(i20+2,df1b$lag3[1:(ndates-1)])
   df1b$lag5=c(i20+1,df1b$lag4[1:(ndates-1)])
-  
+
   # df1b - all data
   # df1c - all sampled dates
   # df1d - all sampled dates with complete data for lags
-  df1c = with(df1b, df1b[!is.na(sum.Af.unfed1),]) 
+  df1c = with(df1b, df1b[!is.na(sum.Af.unfed1),])
   df1d = with(df1c, df1c[lag1 <= i20  & lag2 <= i20  & lag3 <= i20  & lag4 <= i20,])
-  
+
   # lag5 data are required for the model of male survival
   df1d = df1d[df1d$lag5 <= i20,]
   jagsdata = list(sampleddates = i20,
@@ -183,15 +183,15 @@ selectData = function(firstquarter=1,lastquarter=31,model='default', A0=0.6037, 
                   lag2 = df1d$lag2,
                   lag3 = df1d$lag3,
                   lag4 = df1d$lag4)
-  
+
   jagsdata$lag5 = df1d$lag5
   jagsdata$P = P
   jagsdata$A0 = A0
   jagsdata$males = df1c$sum.Af.maleEx
-  if(model == 'temperature'){ jagsdata$mean_temp = df1c$mean_temp}    
+  if(model == 'temperature'){ jagsdata$mean_temp = df1c$mean_temp}
   return(list(df1=df1,jagsdata=jagsdata,plotdata=df1b))}
 
-####### Summarise by trapping method for tabulation 
+####### Summarise by trapping method for tabulation
 
 summarise_by_method = function(){
   # houses observed
@@ -252,10 +252,10 @@ summarise_by_quarter = function(){
                      mu.Af.gravid = mean(Af.gravid, na.rm=TRUE))
   df2 = df2[!is.na(df2$quarter),]
   library(data.table)
-  df3 <- melt(df2, id.vars = "quarter")
+  df3 <- reshape2::melt(df2, id.vars = "quarter")
   df3$value = exp(df3$value)-1
   ticklabels = c(rep('',3),'2002',rep('',3),'2003',rep('',3),'2004',rep('',3),'2005',rep('',3),'2006',rep('',3),'2007',rep('',3),'2008',rep('',3))
-  ggplot(data = df3,aes(x = as.factor(quarter),group=variable)) + theme_bw() +
+  plt=ggplot(data = df3,aes(x = as.factor(quarter),group=variable)) + theme_bw() +
     theme(text = element_text(size=12)) +
     scale_colour_manual(values=get_mp_recomCol(),name='Mosquito category',
                         labels=c('An. funestus unfed or part fed',
@@ -266,10 +266,12 @@ summarise_by_quarter = function(){
     geom_vline(xintercept=22.5) +
     scale_y_log10(name  = 'Williams mean (per trap night)')+
     scale_x_discrete(name = 'Year',labels=ticklabels)
-  return(df2)}
+  summary = list(summary=df2,plt=plt)
+  return(summary)}
 
 Furvela_data =  get_Furvela_data()
 description = Furvela_data$description
+Furvela_data$summary_by_quarter = summarise_by_quarter()
 proportions = Furvela_data$proportions
 workfile = Furvela_data$workfile
 

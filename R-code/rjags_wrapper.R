@@ -1,9 +1,10 @@
+######################### RJAGS WRAPPER AND FUNCTIONS FOR POST-PROCESSING MODEL ESTIMATES
 # Wrapper for running rJAGS and extracting credible intervals for parameters
 
 library(rjags)
 parameterEstimates = function(jagsdata=jagsdata,jagsmodel,variable.names=variable.names){
   library(jagsUI)
-  jagsout = autojags(data=jagsdata, inits=NULL, 
+  jagsout = autojags(data=jagsdata, inits=NULL,
                      parameters.to.save=variable.names, model.file=textConnection(jagsmodel),
                      n.chains= 4, n.adapt=NULL, iter.increment=1000, n.burnin=0, n.thin=1)
   maxIndex = as.integer(sapply(jagsout$mean, function(x) length(x)))
@@ -20,6 +21,40 @@ parameterEstimates = function(jagsdata=jagsdata,jagsmodel,variable.names=variabl
       sd = c(sd,unlist(jagsout$sd[Vari])[j])
     }
   }
-  df = data.frame(Var,Index,X50.,X2.5.,X97.5.,mean,sd)  
+  df = data.frame(Var,Index,X50.,X2.5.,X97.5.,mean,sd)
   return(df)
 }
+
+# Parse rownames in quantile dataframe
+extract_varnames=function(x) {
+  Var = unlist(strsplit(x=x, split='[[]'))[1]
+  Var = gsub("[[:digit:]]", "", Var)
+  return(Var)
+}
+extract_index=function(x) {
+  tempvar = unlist(strsplit(x=x, split='[[]'))[2]
+  Index = unlist(strsplit(x=tempvar, split='[]]'))[1]
+  return(Index)
+}
+
+# Post process results to separate estimates of emergence rates from model parameters
+post_process_quantiles = function(file=all_quantiles){
+  Var=apply(X=as.data.frame(rownames(file)),1,FUN=extract_varnames)
+  Index=apply(X=as.data.frame(rownames(file)),1,FUN=extract_index)
+  estimates=cbind(data.frame(Var),data.frame(Index),file)
+  emergence_rates = data.frame(estimates[estimates$Var=='emergence',])
+  parameters = data.frame(estimates[!(estimates$Var=='emergence'),])
+  results=list(emergence_rates=emergence_rates, parameters=parameters)
+  return(results)
+}
+
+
+
+extract_quantiles = function(jags.samples.out=jags.samples.out){
+  quantiles = data.frame(summary(jags.samples.out)$quantiles)
+  statistics = data.frame(summary(jags.samples.out)$statistics)
+  quantiles$Mean = statistics$Mean
+  quantiles$SD = statistics$SD
+  return(quantiles)
+}
+
