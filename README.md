@@ -1,8 +1,8 @@
 # Furvela_Entomology
 Data and code from malaria entomology studies in Furvela, Mozambique
 
-This folder contains an anonymised version of the data for the various studies:
-
+This folder contains an anonymised version of the data for the various studies.
+The file 'Code book.txt' contains explanations of the variables and English translations where required.
 
 Details 
 

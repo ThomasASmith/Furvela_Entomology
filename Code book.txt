@@ -1,0 +1,358 @@
+This is the codelist for the Furvela Entomology Database
+The definitive version of the data is stored in .csv format. 
+English translations and further explanations of variable names and values for categorical variables are provided to the right of the ':' symbols.
+
+TABLE CASA	:	 Houses
+
+Pessoas	:	 Persons in the household
+
+Mortos	:	 Deaths in the years 2003-2006, obtained by verbal autopsy
+
+potavel	:	 Source of drinking water
+* bomba manoal		:	hand pump
+* depósito de água	:	water tank
+* em casa		:	at home
+* poco			:	well
+* poco ceu aberto    	:	open well
+* poco ou bomba        	:	either well or pump            
+* rio			:	river
+* tanque		:	water tank
+* tanque ou poco	:	water tank or well
+
+lavar	:	 source of water for washing
+* bomba manoal	:	hand pump
+* poco		:	well
+* poco ou rio   :	well or river
+* rio		:	river
+* rio ou em casa:	River or home
+* tanque 	:	Water tank
+
+animais	:	 are there any animals?
+* No
+* yes
+
+Quartos	:	 number of rooms
+
+Camas	:	 number of beds
+
+janelas	:	 number of windows
+
+Telhado	:	 roof material
+* campim	:	grass
+* campim e makute	:	grass and palm leaf
+* campim e zinco	:	grass and metal sheet
+* campim e makuti	:	grass and palm leaf
+* cimento	:	cement
+* Luzalete	:	asbestos sheet
+* makuti	:	palm leaf
+* makuti e canico	:	palm leaf and reed
+* nao sei 	:	unknown
+* placa		:	plates
+* telhas	:	tiles
+* zinco	:	Corrugated iron
+* zinco e cimento	:	Corrugated iron and cement
+* zinco e telhas	:	Corrugated iron and tiles
+
+
+aberturas	:	 eave or gable gaps
+* no
+* yes
+
+Porto	:	 material of the door
+* bambú		:	bamboo
+* caixas	:	boxes
+* caixas	:	boxes
+* caixas de papel	:	Cardboard box
+* canico	:	reed
+* esteira	:	Cloth mat
+* Laka-Laka	:	Coconut wood
+* lapeläo	:	Cloth 
+* madeira	:	wood
+* makuti	:	Palm leaf
+* Matéria do saco	:	sacking
+* outro		:	other
+* palha		:	straw
+* papeläo	:	cardboard
+* saco plastico	:	Plastic sack
+* zinco		:	Corrugated iron
+
+Dirrecao	:	 direction of the doorway(s)
+* este		:	East
+* norte		:	north
+* norte e este	:	North-east
+* norte e sul	:	North and south
+* oeste		:	west
+* oeste e este	:	West and east
+* sul		:	south
+
+Paredes	:	 wall material
+* alvenaria		:	masonry
+* alvenaria e zinco	:	Masonry and corrugated iron
+* barro e canico	:	Mud and reed
+* campim		:	grass
+* canico		:	reed
+* canico e alvenaria	:	Reed and masonry
+* canico e makuti	:	Reed and palm leaf
+* canico reboco		:	Plastered reed
+* estacas		:	Wooden poles
+* esteira de palha	:	Grass matting
+* makuti		:	Palm leaf
+* zinco			:	Corrugated iron
+
+Sabe_a_.venda 	:	 Do you know the price of mosquito nets?
+* no
+* yes
+
+doente_faz	:	 where do you go for treatment?
+* Chicuque
+* Furvela
+* Hospital
+* Inharrumbo
+* Joacane
+* M´bene
+* M´bene and chicuque
+* M´bene and Furvela
+* M´bene or Inharrumbo
+* m´bene, chicuque and furvela
+* MOZDAN
+* Health post
+* Closest health post
+* Just buy tablets
+
+Conheice_Posto	:	 Do you know of the MOZDAN health post?
+* no
+* yes
+
+Con_as_.doencas	:	 Do you know what diseases are treated at the health post?
+* no
+* yes
+
+Cartas. Do you have a MOZDAN health post card?
+* no
+* yes
+
+Novos	:	 New registration
+* no
+* yes
+
+GPS	:	 is there a GPS location?
+* no
+* yes
+
+Tempo_aqui	:	Years of residency
+
+Cumprimento	:	length of house (cm)
+
+Largura		:	Width of house (cm)
+
+Preco		:	Price (of nets)
+* variavel 	:	 Varied
+
+igual_ou_minimo 	:	 is the value of years of residency given as > or = yes
+* igual	:	equals
+* minimo	:	at least
+
+
+_________________________________________________________
+TABLE ANIMAIS	:	 Animals kept by the household (households with at least one animal)
+	
+* Cao	:	Dog
+* Porco	:	Pig
+* Boi	:	Cow
+* Gato	:	Cat
+* Pato	:	Duck
+* Cabrito	:	Goat
+* Galinha	:	Chicken
+* Peru	:	Turkey
+* Pombo	:	Dove
+* Coelho	:	Rabbit
+* Ganco	:	Goose
+* Burro	:	donkey
+
+_________________________________________________________
+TABLE PESSAO	:	 Persons
+Birthdate
+Age
+
+Sexo	:	 sex
+* f	:	Female
+* m	:	Male
+
+Rede	:	 Did you use a mosquito net last night?
+* no
+* yes
+
+Cartao.recolhido. 	:	 health post card collected
+* no
+* lost
+* yes
+
+Onde_foi 	:	 where was net purchased?
+
+* Furvela
+* M´bene
+
+_________________________________________________________
+TABLE MOSQUITEIRO	:	 mosquito net
+
+impregnado	:	 impregnated
+* no
+* Don’t know
+* yes
+
+comprado	:	 where bought. (large number of locations, not tabulated here)
+ 
+Quando	:	 year bought
+
+_________________________________________________________
+TABLE MOSQUITO COLLECTION
+Collection	:	 collection type
+* exit
+* Light
+* resting
+* tent
+
+nr_.copo	:	 cup number for timed exit collections
+* 0	:	Standard collection
+* 1	:	1st cup
+* r2	:	2nd cup
+
+treatment	:	 What intervention applied (if any) netting over openings
+start.time	:	 start time of collection 
+* 0	:	Standard collection
+* 00	:	00	:	hour
+* 1	:	1st cup
+* 18	:	00	:	Hour
+* 18	:	30	:	Hour
+* 2	:	2nd cup
+* 30	:	30 min collection
+* 30?	:	Possible/likely 30 min collection
+* no net	:	Net not used
+
+end.time	:	 end time of collection 
+* 0	:	Standard resting
+* 00	:	00	:	hour
+* 10	:	10 min resting 
+* 18	:	30	:	hour
+* 20	:	20 min resting
+* 22	:	00	:	hour
+
+Net.type	:	 colour of net
+* 	:	white
+* 	:	green
+* 	:	pink
+* 	:	unknown
+* verde	:	green
+* branco	:	white
+* green	:	Green 
+* rosa	:	Pink
+* sem	:	unknown
+* verde	:	green
+
+Af.unfed	:	Number of Anopheles funestus unfed
+Af.part	:	Number of Anopheles funestus part-fed
+Af.fed	:	Number of Anopheles funestus fed
+Af.semi	:	Number of Anopheles funestus semi
+Af.gravid	:	Number of Anopheles funestus gravid
+Af.male	:	Number of Anopheles funestus male
+Ag.unfed	:	Number of Anopheles gambiae unfed
+Ag.part	:	Number of Anopheles gambiae part
+Ag.fed	:	Number of Anopheles gambiae fed
+Ag.semi	:	Number of Anopheles gambiae semi
+Ag.gravid	:	Number of Anopheles gambiae gravid
+Ag.male	:	Number of Anopheles gambiae male
+At.female	:	Number of Anopheles tenebrosus female
+At.male	:	Number of Anopheles tenebrosus male
+africana	:	Number of Mansonia africana
+uniformis	:	Number of Mansonia uniformis
+Ms.female	:	Number of Mansonia female
+Ms.male	:	Number of Mansonia male
+Cx.female	:	Number of Culex female
+Cx.male	:	Number of Culex male
+Ae.female	:	Number of Aedes female
+
+Othersp	:	 Other species. First column is guessed names. Aedes are reported all over the place and should be put in their own columns
+* Ae_male	:	Aedes male
+* mrsh	:	An letabensis
+* njipes	:	An rufipes
+* phr	:	An pharoensis
+* rufipes	:	An rufipes
+* sq	:	An squamosus
+
+Sp.A.female	:	 generic ‘other species’
+Sp.A.male	:	 Other species, numbers of males
+* 1
+* 1_aedes
+* 1_af_red
+* 1_gravid_red_af
+* 1_green_gravid_af
+* 11
+* 12
+* 17
+* 1aph
+* 2
+* 24
+* 3
+* 3_green_af
+* 4
+* 5
+* 5xp
+* 6
+* 7
+* late
+
+Marcado.f	:	 number of recaptured marked females
+colour	:	 colour of the recaptures. 
+* blue
+* green
+* pink
+* red
+* yellow
+
+Marcado.M	:	 number of recaptured males
+* 1_af	:	 1 Anopheles funestus
+* 1_green
+* 1_red
+* 1_red_gravid
+* 1_yellow
+
+
+Marcado.m.colour	:	 colour of recaptured males
+* green
+* pink
+* red
+* yellow
+* yellow_+_green
+Marcado.Ag.f	:	 An. gambiae females recaptured.
+Marcado.Ag.m	:	 An. gambiae males recaptured.
+ 
+_________________________________________________________
+TABLE SPOROZOITES
+
+Coll	:	 how were the mosquitoes for sporozoite analysis collected 
+* l	:	Light-trap
+* r	:	resting
+* r-10'	:	Timed resting
+* s	:	exit
+* t	:	Tent-trap
+
+Especies	:	 species
+* funestus
+* gambiae
+
+Numero	:	 pool size and number of wells tested for sporozoites
+
+Amostra	:	 Sample 
+* 1	:	Whole mosquito
+* thorax	:	thorax
+
+abdomen	:	 abdominal stage of mosquitoes
+* fed
+* gravid
+* unfed
+
+Resultado	:	 result. 
+* 0	:	negative
+* 1	:	Low positive
+* 2	:	Mid positive
+* 3	:	High positive
