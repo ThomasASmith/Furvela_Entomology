@@ -18,19 +18,17 @@ analyseExitTrap = function(firstquarter=15,lastquarter=16){
   rescaled = with(scaled,c(emergence,unfed1,gravid,male))
   plotdate = rep(data$plotdata$date,times=4)
   toPlot = data.frame(plotdate,variable,value,rescaled)
-  library(ggplot2)
-  get_mp_recomCol = function() {return(c("#D55E00", "#009E73", "#0072A7","#C879C8"))}
+
   plt1 =ggplot(data = toPlot,aes(x = plotdate,group=variable)) + theme_bw() +
     theme(text = element_text(size=12)) +
-    scale_colour_manual(values=get_mp_recomCol(),name='Mosquito category') +
+    scale_colour_manual(values=get_palette(),name='Mosquito category') +
     geom_point(aes(y=value,colour=variable),size=2, show.legend=TRUE) +
     theme(legend.position = c(.75,.8)) +
     theme(legend.background = element_rect(colour = 'black', fill = 'white', linetype='solid')) +
-    #scale_x_continuous(name = 'Day',limits=c(0,80)) +
     scale_y_continuous(name = 'Mosquitoes per exit trap')
   plt2 =ggplot(data = toPlot,aes(x = plotdate,group=variable)) + theme_bw() +
     theme(text = element_text(size=12)) +
-    scale_colour_manual(values=get_mp_recomCol(),name='Mosquito category') +
+    scale_colour_manual(values=get_palette(),name='Mosquito category') +
     geom_point(aes(y=rescaled,colour=variable),size=2, show.legend=FALSE) +
     scale_x_continuous(name = 'Day',limits=c(0,80)) +
     scale_y_log10(name = 'Relative numbers',limits=c(0.1,10))
@@ -583,6 +581,6 @@ remove(list=c("analyseExitTrap","resting_sample","analyseExitTrap_allmodels","ex
               "extract_index","extract_quantiles","extract_varnames","post_process_quantiles",
               "simulateExitTrapData","simulationsExitTraps",
               "SimulationsExitTrapsFixedSampleSize","summarise_by_method","summarise_by_quarter",
-              "get_mp_recomCol","plotConsistency","plotCorrelations","plotEstimatesByTemp","errbarPlot",
+              "get_palette","plotConsistency","plotCorrelations","plotEstimatesByTemp","errbarPlot",
               "plotEstimatesByTime","plotSimulatedData","plotSimulations_vs_Inputs")))
 
