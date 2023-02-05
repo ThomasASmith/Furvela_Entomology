@@ -26,9 +26,6 @@ toPlot = data.frame(Rvector,Pvector,bias)
 library(ggplot2)
 library(grid)
 library(scales)
-# define colourBlind safe colors
-# slightly more blue pink/purple #C879C8 to replace pink#CC79A7
-mp_recomCol = c("#D55E00", "#009E73", "#0072A7","#C879C8")
 fmt_dcimals <- function(decimals=0){function(x) format(x,nsmall = decimals,scientific = FALSE)}
 toPlot$bias[toPlot$Pvector > toPlot$Rvector] <- NA
 toPlot$bias <- cut(toPlot$bias,breaks = c(-Inf,-0.75,-0.45,-0.15,0.15,0.45,Inf))
@@ -36,8 +33,8 @@ triangle <- data.frame(x=c(0,0,1),y=c(0,1,1))
 s1 = ggplot(data=toPlot,aes(x=Rvector, y=Pvector, fill=bias)) + theme_bw() +
   theme(text = element_text(size = 14)) +
   geom_tile() +
-  scale_fill_manual(values = c("black","darkblue", "blue",
-             "green","yellow","red","lightgrey"),na.translate = FALSE) +
+  scale_fill_manual(values = c("black" ,"#08519C","#3182BD","#6BAED6","#BDD7E7","#EFF3FF","lightgrey"),
+                    na.translate = FALSE) +
             labs(x = "R", y=expression("P"[0]))
         geom_polygon(data=triangle,mapping=aes(x=x,y=y, fill='lightgrey'), show.legend = FALSE)
 
